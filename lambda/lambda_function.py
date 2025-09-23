@@ -2,7 +2,7 @@ import json, requests
 from urllib.parse import quote
 
 # 🚨 Hard-coded dev key (replace this each day when you regenerate)
-RIOT_KEY = "RGAPI-e72c2eea-ebd5-4638-b8e2-73492f173358"
+RIOT_KEY = "RGAPI-9829cf91-f336-4ba4-83fa-cf62ee7216d2"
 
 VALID_PLATFORMS = {"na1","euw1","kr","eun1","br1","la1","la2","tr1","ru","jp1","oc1"}
 
