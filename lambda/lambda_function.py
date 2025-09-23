@@ -2,7 +2,7 @@ import json, os, requests
 from urllib.parse import quote
 
 # Riot API key is provided via environment variable at deploy-time
-RIOT_KEY = os.environ.get("RIOT_KEY")
+RIOT_KEY = (os.environ.get("RIOT_KEY", "").strip())
 
 VALID_PLATFORMS = {"na1","euw1","kr","eun1","br1","la1","la2","tr1","ru","jp1","oc1"}
 
@@ -36,8 +36,11 @@ def lambda_handler(event, context):
 
     url = f"https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{quote(summoner, safe='')}"
 
-    
-    headers = {"X-Riot-Token": RIOT_KEY}
+    headers = {
+        "X-Riot-Token": RIOT_KEY,
+        "User-Agent": "Riot-Client-Ai/1.0 (+contact: cryunknoown666@gmail.com)",
+        "Accept": "application/json"
+    }
 
     try:
         r = requests.get(url, headers=headers, timeout=8)
