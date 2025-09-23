@@ -6,6 +6,7 @@ RIOT_KEY = (os.environ.get("RIOT_KEY", "").strip())
 
 VALID_PLATFORMS = {"na1","euw1","kr","eun1","br1","la1","la2","tr1","ru","jp1","oc1"}
 
+
 def _resp(status, body):
     return {
         "statusCode": status,
@@ -36,15 +37,13 @@ def lambda_handler(event, context):
 
     url = f"https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{quote(summoner, safe='')}"
 
-    headers = {
-        "X-Riot-Token": RIOT_KEY,
-        "User-Agent": "Riot-Client-Ai/1.0 (+contact: cryunknoown666@gmail.com)",
-        "Accept": "application/json"
-    }
+    headers = {"X-Riot-Token": RIOT_KEY}
 
     try:
         r = requests.get(url, headers=headers, timeout=8)
+        
         if r.status_code != 200:
+            # Surface small slice of text for debugging; full text not needed
             return _resp(r.status_code, {"error":"Riot API error","status":r.status_code,"text":r.text[:200]})
         data = r.json()
         return _resp(200, {
