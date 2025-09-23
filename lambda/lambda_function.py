@@ -1,8 +1,8 @@
-import json, requests
+import json, os, requests
 from urllib.parse import quote
 
-# 🚨 Hard-coded dev key (replace this each day when you regenerate)
-RIOT_KEY = "RGAPI-9829cf91-f336-4ba4-83fa-cf62ee7216d2"
+# Riot API key is provided via environment variable at deploy-time
+RIOT_KEY = os.environ.get("RIOT_KEY")
 
 VALID_PLATFORMS = {"na1","euw1","kr","eun1","br1","la1","la2","tr1","ru","jp1","oc1"}
 
@@ -23,6 +23,10 @@ def lambda_handler(event, context):
     if event.get("requestContext", {}).get("http", {}).get("method") == "OPTIONS":
         return _resp(200, {"ok": True})
 
+    # Ensure the API key is configured
+    if not RIOT_KEY:
+        return _resp(500, {"error":"missing_config","message":"RIOT_KEY environment variable is not set"})
+
     params = event.get("queryStringParameters") or {}
     summoner = (params.get("summoner") or "Faker").strip()
     platform = (params.get("platform") or "na1").strip().lower()
@@ -31,6 +35,8 @@ def lambda_handler(event, context):
         return _resp(400, {"error":"invalid_platform","allowed":sorted(list(VALID_PLATFORMS))})
 
     url = f"https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{quote(summoner, safe='')}"
+
+    
     headers = {"X-Riot-Token": RIOT_KEY}
 
     try:
